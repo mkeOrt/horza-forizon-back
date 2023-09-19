@@ -3,6 +3,7 @@ import { Horse } from "./types";
 export let isGameStarted = false;
 const horses = new Map<string, Horse>();
 let symbols = generateCharacters();
+let symbolsByStep: Array<string> = [];
 
 export function createHorse(uuid: string): Horse {
   const horse = {
@@ -39,21 +40,42 @@ function generateCharacters(): Array<string> {
   return symbols;
 }
 
-export function startRace(): string {
+function generateSymbolsByStep(steps: number): Array<string> {
+  const data = [];
+  for (let i = 0; i < steps; i++) {
+    data[i] = '';
+    for (let j = 0; j < i + 1; j++) {
+      data[i] += symbols[Math.floor(Math.random() * symbols.length)];
+    }
+  }
+  return data;
+}
+
+export function startRace(stepsAmount: number): string {
   isGameStarted = true;
   symbols = generateCharacters();
+  symbolsByStep = generateSymbolsByStep(stepsAmount);
   horses.forEach((horse) => {
     horse.position = 0;
   });
 
-  return symbols[0];
+  return symbolsByStep[0];
 }
 
 export function moveHorse(horseId: string, letter: string): string | undefined {
   const horse = horses.get(horseId);
-  if (symbols[horse!.position] === letter) {
+  if (symbolsByStep[horse!.position] === letter) {
     horse!.position += 1;
-    return symbols[horse!.position];
+    if (horse?.position === symbolsByStep.length) {
+      return 'ñ'; // This horse won
+    }
+    return symbolsByStep[horse!.position];
   }
   return;
+}
+
+export function aHorseWon(horseId: string): Horse {
+  const horse = horses.get(horseId);
+  isGameStarted = false;
+  return horse!;
 }
