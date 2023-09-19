@@ -85,7 +85,7 @@ export function submitLetter(ws: ServerWebSocket<WebSocketData>, letter: any) {
     } else {
       const data = JSON.stringify({
         action: 'horse-moved',
-        horses: service.getAllHorses(),
+        allHorses: service.getAllHorses(),
       });
   
       ws.publish('race', data);
